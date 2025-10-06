@@ -1,0 +1,65 @@
+## .NET ##
+**/bin/
+**/obj/
+**/.vs/
+**/launchSettings.json
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+*.sln.iml
+
+# NuGet
+**/packages/
+*.nupkg
+.nuget/
+nuget.exe
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+*.swp
+*.swo
+
+# Logs
+*.log
+*.log*
+
+# Local config files
+appsettings.Development.json
+appsettings.Local.json
+
+# Temp files
+*.tmp
+*.temp
+
+# Coverage
+coverage.json
+coverage.opencover.xml
+**/coverage/
+*.coverage
