@@ -1,4 +1,5 @@
-﻿using ChessRatingListApi.Models.Requests;
+﻿using ChessRatingListApi.Constans;
+using ChessRatingListApi.Models.Requests;
 
 namespace ChessRatingListApi.Entities
 {
@@ -10,6 +11,60 @@ namespace ChessRatingListApi.Entities
         {
             Players = players;
         }
+
+        public List<Player> GetPlayers(PlayerFilter filter)
+        {
+            var query = Players.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filter.Surname))
+                query = query.Where(p => p.Surname.Contains(filter.Surname));
+
+            if (!string.IsNullOrEmpty(filter.Name))
+                query = query.Where(p => p.Name.Contains(filter.Name));
+
+            if (filter.MinRating != null)
+                query = query.Where(p => p.Rating >= filter.MinRating);
+
+            if (filter.MaxRating != null)
+                query = query.Where(p => p.Rating <= filter.MaxRating);
+
+            if (filter.Federation != null)
+                query = query.Where(p => p.Federation.Contains(filter.Federation));
+
+            query = filter.SortBy switch
+            {
+                OrderParams.id => filter.Descending
+                    ? query.OrderByDescending(p => p.Id)
+                    : query.OrderBy(p => p.Id),
+
+                OrderParams.surname => filter.Descending
+                    ? query.OrderByDescending(p => p.Surname)
+                    : query.OrderBy(p => p.Surname),
+
+                OrderParams.name => filter.Descending
+                    ? query.OrderByDescending(p => p.Name)
+                    : query.OrderBy(p => p.Name),
+
+                OrderParams.age => filter.Descending
+                    ? query.OrderByDescending(p => p.Age)
+                    : query.OrderBy(p => p.Age),
+
+                OrderParams.rating => filter.Descending
+                   ? query.OrderByDescending(p => p.Rating)
+                   : query.OrderBy(p => p.Rating),
+
+                _ => filter.Descending
+                    ? query.OrderByDescending(p => p.Id)
+                    : query.OrderBy(p => p.Id),
+            };
+
+            query = query
+                .Skip((filter.Page - 1) * filter.Size)
+                .Take(filter.Size);
+
+            return query.ToList();
+        }
+
 
         public Player? GetPlayerById(int id)
         {
@@ -36,14 +91,6 @@ namespace ChessRatingListApi.Entities
             player.Age = newInfoPlayer.Age;
             player.Rating = newInfoPlayer.Rating;
             player.Federation = newInfoPlayer.Federation;
-        }
-        public List<Player> GetOrderedByRating(bool byDescending)
-        {
-            var orderedPlayers = byDescending
-                ? Players.OrderByDescending(player => player.Rating).ToList()
-                : Players.OrderBy(player => player.Rating).ToList();
-
-            return orderedPlayers;
         }
     }
 }

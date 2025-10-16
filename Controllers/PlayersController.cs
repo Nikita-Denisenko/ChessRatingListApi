@@ -13,9 +13,12 @@ namespace ChessRatingListApi.Controllers
         private static readonly PlayerManager _playerManager = new PlayerManager(LoadPlayers("Data/players.json"));
 
         [HttpGet]
-        public IActionResult GetPlayers()
+        public IActionResult GetPlayers([FromQuery] PlayerFilter filter)   
         {
-            return Ok(_playerManager.Players);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            return Ok(_playerManager.GetPlayers(filter));
         }
 
         [HttpGet("{id:int}")]
@@ -88,13 +91,6 @@ namespace ChessRatingListApi.Controllers
                 return NotFound("Ошибка, игрок с таким Id не найден!");
             _playerManager.EditPlayer(id, editPlayerRequest);
             return Ok(editPlayerRequest);
-        }
-
-        [HttpGet]
-        public IActionResult GerOrderedByRatingPlayers([FromQuery] bool byDescending = false)
-        {
-            var orderedPlayers = _playerManager.GetOrderedByRating(byDescending);
-            return Ok(orderedPlayers);
         }
     }
 }
