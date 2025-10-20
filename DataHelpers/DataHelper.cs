@@ -7,19 +7,15 @@ namespace ChessRatingListApi.DataHelpers
     {
         public static List<Player> LoadPlayers(string path)
         {
-            try
+            var options = new JsonSerializerOptions
             {
-                var text = File.ReadAllText(path);
-                var players = JsonSerializer.Deserialize<List<Player>>(text)
-                    ?? new List<Player>();
+                PropertyNamingPolicy = null,  
+                WriteIndented = true
+            };
 
-                return players;
-            }
-            catch(FileNotFoundException ex) 
-            {
-                Console.WriteLine("Ошибка! Файл не найден.");
-                return new List<Player>();
-            }
+            var text = File.ReadAllText(path);
+            return JsonSerializer.Deserialize<List<Player>>(text, options)
+                   ?? new List<Player>();
         }
 
         public static void SavePlayers(string path, List<Player> players)

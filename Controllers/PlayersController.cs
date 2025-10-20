@@ -1,6 +1,7 @@
 using ChessRatingListApi.Entities;
 using ChessRatingListApi.Models.Requests;
 using ChessRatingListApi.Models.Responses;
+using ChessRatingListApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using static ChessRatingListApi.DataHelpers.DataHelper;
 
@@ -10,7 +11,12 @@ namespace ChessRatingListApi.Controllers
     [Route("[controller]")]
     public class PlayersController : ControllerBase
     {
-        private static readonly PlayerManager _playerManager = new PlayerManager(LoadPlayers("Data/players.json"));
+        private readonly IPlayerService _playerService;
+
+        public PlayersController(IPlayerService playerService)
+        {
+            _playerService = playerService;
+        }
 
         [HttpGet]
         public IActionResult GetPlayers([FromQuery] PlayerFilter filter)   
@@ -18,13 +24,13 @@ namespace ChessRatingListApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(_playerManager.GetPlayers(filter));
+            return Ok(_playerService.GetPlayers(filter));
         }
 
         [HttpGet("{id:int}")]
         public IActionResult GetPlayerById([FromRoute] int id)
         {
-            var player = _playerManager.GetPlayerById(id);
+            var player = _playerService.GetPlayerById(id);
             if (player is null) return NotFound("Ошибка, игрок с таким Id не найден!");
             return Ok
                 (
@@ -56,6 +62,9 @@ namespace ChessRatingListApi.Controllers
                 createPlayerRequest.Federation
             );
 
+            _playerService.AddPlayer(player);
+            SavePlayers("Data/players.json", _playerService.Players);
+
             return CreatedAtAction(
                 nameof(GetPlayerById),
                 new { id = player.Id },
@@ -74,9 +83,10 @@ namespace ChessRatingListApi.Controllers
         [HttpDelete("{id:int}")]
         public IActionResult DeletePlayer([FromRoute] int id)
         {
-            if (_playerManager.GetPlayerById(id) is null)
+            if (_playerService.GetPlayerById(id) is null)
                 return NotFound("Ошибка, игрок с таким Id не найден!");
-            _playerManager.DeletePlayerById(id);
+            _playerService.DeletePlayerById(id);
+            SavePlayers("Data/players.json", _playerService.Players);
             return NoContent();
         }
 
@@ -87,9 +97,10 @@ namespace ChessRatingListApi.Controllers
             [FromBody] EditPlayerRequest editPlayerRequest
         )
         {
-            if (_playerManager.GetPlayerById(id) is null)
+            if (_playerService.GetPlayerById(id) is null)
                 return NotFound("Ошибка, игрок с таким Id не найден!");
-            _playerManager.EditPlayer(id, editPlayerRequest);
+            _playerService.EditPlayer(id, editPlayerRequest);
+            SavePlayers("Data/players.json", _playerService.Players);
             return Ok(editPlayerRequest);
         }
     }

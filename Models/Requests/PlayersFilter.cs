@@ -1,4 +1,6 @@
-﻿namespace ChessRatingListApi.Models.Requests
+﻿using ChessRatingListApi.Constans;
+
+namespace ChessRatingListApi.Models.Requests
 {
     public class PlayerFilter
     {
@@ -9,7 +11,7 @@
         public int? MinRating { get; set; }
         public int? MaxRating { get; set; }
         public string? Federation { get; set; }
-        public string SortBy { get; set; } = "id";
+        public string SortBy { get; set; } = OrderParams.id;
         public bool Descending { get; set; } = false;
     }
 }

@@ -1,15 +1,17 @@
 ﻿using ChessRatingListApi.Constans;
+using ChessRatingListApi.Entities;
 using ChessRatingListApi.Models.Requests;
+using static ChessRatingListApi.DataHelpers.DataHelper;
 
-namespace ChessRatingListApi.Entities
+namespace ChessRatingListApi.Services
 {
-    public class PlayerManager
+    public class PlayerService : IPlayerService
     {
         public List<Player> Players { get; set; }
 
-        public PlayerManager(List<Player> players)
+        public PlayerService()
         {
-            Players = players;
+            Players = LoadPlayers("Data/players.json");
         }
 
         public List<Player> GetPlayers(PlayerFilter filter)
